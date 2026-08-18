@@ -1,0 +1,17 @@
+target/
+*.class
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+out/
+
+# OS
+.DS_Store
+
+# Env
+.env
+
+# Logs
+*.log
