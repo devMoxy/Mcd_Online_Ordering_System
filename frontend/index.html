@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Order ahead — browse the menu, build your order, and track it in real time.">
+<title>Quickserve — Order ahead</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B1712'/%3E%3Crect x='7' y='11' width='18' height='3.4' rx='1.7' fill='%23D9A441'/%3E%3Crect x='7' y='15.5' width='18' height='3.4' rx='1.7' fill='%23D5491F'/%3E%3Crect x='7' y='20' width='18' height='3.4' rx='1.7' fill='%23D9A441'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+      <rect x="2" y="9" width="28" height="4" rx="2" fill="var(--gold)"/>
+      <rect x="2" y="14" width="28" height="4" rx="2" fill="var(--ember)"/>
+      <rect x="2" y="19" width="28" height="4" rx="2" fill="var(--gold)"/>
+    </svg>
+    <span class="brand-name">Quickserve</span>
+  </div>
+
+  <nav class="topnav" id="mainNav" aria-label="Main">
+    <button class="nav-link active" data-view="menu">Menu</button>
+    <button class="nav-link" data-view="orders">Your orders</button>
+  </nav>
+
+  <div class="topbar-actions">
+    <span class="user-email" id="userEmail" hidden></span>
+    <button class="btn-text" id="logoutBtn" hidden>Log out</button>
+    <button class="btn-text" id="loginNavBtn">Log in</button>
+    <button class="cart-btn" id="cartBtn" aria-label="Open cart">
+      <svg viewBox="0 0 20 20" width="17" height="17" fill="none" aria-hidden="true">
+        <path d="M2 3h1.6l1 11.2A2 2 0 0 0 6.6 16h8.8a2 2 0 0 0 2-1.8L18.5 6H5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="8" cy="18.2" r="1.1" fill="currentColor"/>
+        <circle cx="14.5" cy="18.2" r="1.1" fill="currentColor"/>
+      </svg>
+      <span id="cartCount" hidden>0</span>
+    </button>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- AUTH VIEW -->
+  <section class="view" id="view-auth" hidden>
+    <div class="auth-card">
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-form="login">Log in</button>
+        <button class="auth-tab" data-form="register">Create account</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>Email
+          <input type="email" name="email" required autocomplete="email">
+        </label>
+        <label>Password
+          <input type="password" name="password" required autocomplete="current-password">
+        </label>
+        <p class="form-error" id="loginError" hidden></p>
+        <button type="submit" class="btn-primary btn-full">Log in</button>
+      </form>
+
+      <form id="registerForm" class="auth-form" hidden>
+        <label>Email
+          <input type="email" name="email" required autocomplete="email">
+        </label>
+        <label>Password
+          <input type="password" name="password" required minlength="8" autocomplete="new-password">
+        </label>
+        <p class="form-hint">At least 8 characters.</p>
+        <p class="form-error" id="registerError" hidden></p>
+        <button type="submit" class="btn-primary btn-full">Create account</button>
+      </form>
+    </div>
+  </section>
+
+  <!-- MENU VIEW -->
+  <section class="view" id="view-menu">
+    <div class="hero">
+      <h1>Order ahead,<br>skip the line.</h1>
+      <p>Browse the full menu and check out in seconds.</p>
+    </div>
+
+    <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Menu categories"></div>
+    <div class="menu-list" id="menuList">
+      <div class="skeleton-grid" aria-hidden="true">
+        <div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ORDERS VIEW -->
+  <section class="view" id="view-orders" hidden>
+    <h1 class="section-title">Your orders</h1>
+    <div id="ordersList">
+      <p class="loading-msg">Loading your orders…</p>
+    </div>
+  </section>
+
+</main>
+
+<!-- CART DRAWER -->
+<div class="cart-overlay" id="cartOverlay" hidden></div>
+<aside class="cart-drawer" id="cartDrawer" hidden aria-label="Cart">
+  <div class="cart-header">
+    <h2>Your cart</h2>
+    <button class="btn-icon" id="closeCartBtn" aria-label="Close cart">
+      <svg viewBox="0 0 16 16" width="14" height="14"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div class="cart-total-row">
+      <span>Total</span>
+      <span id="cartTotal">$0.00</span>
+    </div>
+    <p class="form-error" id="orderError" hidden></p>
+    <button class="btn-primary btn-full" id="checkoutBtn">Place order</button>
+  </div>
+</aside>
+
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
