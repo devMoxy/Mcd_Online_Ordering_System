@@ -3,42 +3,47 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Order ahead — browse the menu, build your order, and track it in real time.">
-<title>Quickserve — Order ahead</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%231B1712'/%3E%3Crect x='7' y='11' width='18' height='3.4' rx='1.7' fill='%23D9A441'/%3E%3Crect x='7' y='15.5' width='18' height='3.4' rx='1.7' fill='%23D5491F'/%3E%3Crect x='7' y='20' width='18' height='3.4' rx='1.7' fill='%23D9A441'/%3E%3C/svg%3E">
+<meta name="description" content="McDonald's Clone — a fan-made portfolio project. Browse the menu, order ahead, and track your order.">
+<title>McDonald's Clone — Order ahead</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23DA291C'/%3E%3Cpath d='M7 25V12q0-5 4-5t4 5v3M17 25V12q0-5 4-5t4 5v13' fill='none' stroke='%23FFC72C' stroke-width='3.2' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
 <header class="topbar">
-  <div class="brand">
-    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
-      <rect x="2" y="9" width="28" height="4" rx="2" fill="var(--gold)"/>
-      <rect x="2" y="14" width="28" height="4" rx="2" fill="var(--ember)"/>
-      <rect x="2" y="19" width="28" height="4" rx="2" fill="var(--gold)"/>
-    </svg>
-    <span class="brand-name">Quickserve</span>
-  </div>
-
-  <nav class="topnav" id="mainNav" aria-label="Main">
-    <button class="nav-link active" data-view="menu">Menu</button>
-    <button class="nav-link" data-view="orders">Your orders</button>
-  </nav>
-
-  <div class="topbar-actions">
-    <span class="user-email" id="userEmail" hidden></span>
-    <button class="btn-text" id="logoutBtn" hidden>Log out</button>
-    <button class="btn-text" id="loginNavBtn">Log in</button>
-    <button class="cart-btn" id="cartBtn" aria-label="Open cart">
-      <svg viewBox="0 0 20 20" width="17" height="17" fill="none" aria-hidden="true">
-        <path d="M2 3h1.6l1 11.2A2 2 0 0 0 6.6 16h8.8a2 2 0 0 0 2-1.8L18.5 6H5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="8" cy="18.2" r="1.1" fill="currentColor"/>
-        <circle cx="14.5" cy="18.2" r="1.1" fill="currentColor"/>
+  <div class="topbar-row topbar-row--brand">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
+        <path d="M7 27V12q0-5.5 4.5-5.5T16 12v4M16 27V12q0-5.5 4.5-5.5T25 12v15" fill="none" stroke="var(--gold)" stroke-width="3.4" stroke-linecap="round"/>
       </svg>
+      <div class="brand-text">
+        <span class="brand-name">McDonald's Clone</span>
+        <span class="brand-tag">Fan-made portfolio project · not affiliated</span>
+      </div>
+    </div>
+    <button class="cart-btn" id="cartBtn" aria-label="Open cart">
+      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true">
+        <path d="M2 3h1.6l1 11.2A2 2 0 0 0 6.6 16h8.8a2 2 0 0 0 2-1.8L18.5 6H5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="8" cy="18.2" r="1.15" fill="currentColor"/>
+        <circle cx="14.5" cy="18.2" r="1.15" fill="currentColor"/>
+      </svg>
+      Cart
       <span id="cartCount" hidden>0</span>
     </button>
+  </div>
+
+  <div class="topbar-row topbar-row--nav">
+    <nav class="topnav" id="mainNav" aria-label="Main">
+      <button class="nav-link active" data-view="menu">Menu</button>
+      <button class="nav-link" data-view="orders">Your orders</button>
+    </nav>
+    <div class="auth-area">
+      <span class="user-email" id="userEmail" hidden></span>
+      <button class="btn-text" id="logoutBtn" hidden>Log out</button>
+      <button class="btn-account" id="loginNavBtn">Log in / Sign up</button>
+    </div>
   </div>
 </header>
 
@@ -80,8 +85,8 @@
   <!-- MENU VIEW -->
   <section class="view" id="view-menu">
     <div class="hero">
-      <h1>Order ahead,<br>skip the line.</h1>
-      <p>Browse the full menu and check out in seconds.</p>
+      <h1>Craving something good?</h1>
+      <p>Order ahead and skip the queue.</p>
     </div>
 
     <div class="category-tabs" id="categoryTabs" role="tablist" aria-label="Menu categories"></div>
@@ -105,21 +110,29 @@
 <!-- CART DRAWER -->
 <div class="cart-overlay" id="cartOverlay" hidden></div>
 <aside class="cart-drawer" id="cartDrawer" hidden aria-label="Cart">
-  <div class="cart-header">
-    <h2>Your cart</h2>
-    <button class="btn-icon" id="closeCartBtn" aria-label="Close cart">
-      <svg viewBox="0 0 16 16" width="14" height="14"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-    </button>
-  </div>
-  <div class="cart-items" id="cartItems"></div>
-  <div class="cart-footer">
-    <div class="cart-total-row">
-      <span>Total</span>
-      <span id="cartTotal">$0.00</span>
+
+  <!-- Normal cart state -->
+  <div id="cartState">
+    <div class="cart-header">
+      <h2>Your cart</h2>
+      <button class="btn-icon" id="closeCartBtn" aria-label="Close cart">
+        <svg viewBox="0 0 16 16" width="14" height="14"><path d="M1 1l14 14M15 1L1 15" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+      </button>
     </div>
-    <p class="form-error" id="orderError" hidden></p>
-    <button class="btn-primary btn-full" id="checkoutBtn">Place order</button>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Total</span>
+        <span id="cartTotal">£0.00</span>
+      </div>
+      <p class="form-error" id="orderError" hidden></p>
+      <button class="btn-primary btn-full" id="checkoutBtn">Place order</button>
+    </div>
   </div>
+
+  <!-- Confirmation state, shown right after an order is placed -->
+  <div id="confirmState" hidden></div>
+
 </aside>
 
 <div class="toast" id="toast" hidden role="status"></div>

@@ -5,6 +5,7 @@ import com.mcdonaldsclone.dto.request.RegisterRequest;
 import com.mcdonaldsclone.dto.response.AuthResponse;
 import com.mcdonaldsclone.entity.User;
 import com.mcdonaldsclone.enums.Role;
+import com.mcdonaldsclone.exception.EmailAlreadyExistsException;
 import com.mcdonaldsclone.repository.UserRepository;
 import com.mcdonaldsclone.security.JwtUtil;
 import com.mcdonaldsclone.service.AuthService;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,7 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadCredentialsException("An account with this email already exists");
+            throw new EmailAlreadyExistsException("An account with this email already exists");
         }
 
         User user = new User();
@@ -42,12 +44,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+            );
+        } catch (AuthenticationException ex) {
+            throw new BadCredentialsException("Incorrect email or password");
+        }
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadCredentialsException("Invalid email or password"));
+                .orElseThrow(() -> new BadCredentialsException("Incorrect email or password"));
 
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
         return new AuthResponse(token, user.getEmail(), user.getRole().name());

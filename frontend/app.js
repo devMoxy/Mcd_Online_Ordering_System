@@ -9,10 +9,30 @@ const state = {
   orders: [],
 };
 
+let ordersTickInterval = null;
+
 // ---------- helpers ----------
 
 function money(n) {
-  return `$${Number(n).toFixed(2)}`;
+  return `£${Number(n).toFixed(2)}`;
+}
+
+// Bigger orders take longer — base 5 min, +1 min per item beyond the first 3, capped at 20.
+function estimateMinutes(order) {
+  const totalQty = order.items.reduce((sum, it) => sum + it.quantity, 0);
+  return Math.min(20, 5 + Math.max(0, totalQty - 3));
+}
+
+function orderReadyInfo(order) {
+  const estMin = estimateMinutes(order);
+  const placedAt = new Date(order.createdAt).getTime();
+  const elapsedMin = (Date.now() - placedAt) / 60000;
+  const remaining = Math.ceil(estMin - elapsedMin);
+
+  if (remaining <= 0) {
+    return { ready: true, text: 'Ready for pickup!' };
+  }
+  return { ready: false, text: `Ready in ~${remaining} min` };
 }
 
 function showToast(message) {
@@ -20,7 +40,7 @@ function showToast(message) {
   toast.textContent = message;
   toast.hidden = false;
   clearTimeout(showToast._t);
-  showToast._t = setTimeout(() => { toast.hidden = true; }, 2600);
+  showToast._t = setTimeout(() => { toast.hidden = true; }, 3200);
 }
 
 async function api(path, options = {}) {
@@ -144,6 +164,8 @@ function showView(name) {
     link.classList.toggle('active', link.dataset.view === name);
   });
 
+  clearInterval(ordersTickInterval);
+
   if (name === 'orders') {
     if (!isLoggedIn()) {
       showView('auth');
@@ -151,6 +173,8 @@ function showView(name) {
       return;
     }
     loadOrders();
+    // Re-render every 15s so "Ready in ~N min" counts down live, and flips to "Ready for pickup!" on its own.
+    ordersTickInterval = setInterval(renderOrders, 15000);
   }
 }
 
@@ -212,7 +236,6 @@ function itemCardHtml(item) {
   `;
 }
 
-// Renders either a plain "+" add button, or a qty stepper, per item card — kept in sync with the cart.
 function syncItemCardControls() {
   document.querySelectorAll('.item-controls').forEach((el) => {
     const id = el.dataset.id;
@@ -221,7 +244,7 @@ function syncItemCardControls() {
     const line = state.cart.find((l) => l.menuItemId === id);
 
     if (!line) {
-      el.innerHTML = `<button class="add-btn" aria-label="Add ${name}">+</button>`;
+      el.innerHTML = `<button class="add-btn" aria-label="Add ${name}">Add</button>`;
       el.querySelector('.add-btn').addEventListener('click', () => addToCart(id, name, price));
     } else {
       el.innerHTML = `
@@ -309,6 +332,8 @@ function renderCart() {
 }
 
 function openCart() {
+  document.getElementById('cartState').hidden = false;
+  document.getElementById('confirmState').hidden = true;
   document.getElementById('cartOverlay').hidden = false;
   document.getElementById('cartDrawer').hidden = false;
 }
@@ -346,13 +371,12 @@ document.getElementById('checkoutBtn').addEventListener('click', async () => {
 
   try {
     const body = { items: state.cart.map((l) => ({ menuItemId: Number(l.menuItemId), quantity: l.quantity })) };
-    await api('/api/orders', { method: 'POST', body: JSON.stringify(body) });
+    const order = await api('/api/orders', { method: 'POST', body: JSON.stringify(body) });
+
     state.cart = [];
     renderCart();
     syncItemCardControls();
-    closeCart();
-    showToast('Order placed — check "Your orders" for status');
-    showView('orders');
+    showConfirmation(order);
   } catch (err) {
     errorEl.textContent = err.message;
     errorEl.hidden = false;
@@ -361,6 +385,50 @@ document.getElementById('checkoutBtn').addEventListener('click', async () => {
     btn.textContent = originalLabel;
   }
 });
+
+// Shows the receipt right inside the cart drawer immediately after checkout succeeds.
+function showConfirmation(order) {
+  const estMin = estimateMinutes(order);
+  const confirmEl = document.getElementById('confirmState');
+
+  confirmEl.innerHTML = `
+    <div class="confirm-header">
+      <div class="checkmark">
+        <svg viewBox="0 0 20 20" width="22" height="22"><path d="M4 10.5l4 4 8-9" stroke="#2B2118" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>Order placed!</h2>
+      <p>We're on it.</p>
+      <div class="confirm-order-number">Order #${order.id}</div>
+      <div class="confirm-eta">Ready in ~${estMin} min</div>
+    </div>
+    <div class="confirm-body">
+      <div class="confirm-receipt-title">Your receipt</div>
+      ${receiptItemsHtml(order)}
+    </div>
+    <div class="confirm-footer">
+      <button class="btn-primary btn-full" id="viewOrdersBtn">View your orders</button>
+      <button class="btn-secondary btn-full" id="continueShoppingBtn">Continue shopping</button>
+    </div>
+  `;
+
+  document.getElementById('cartState').hidden = true;
+  confirmEl.hidden = false;
+  document.getElementById('cartOverlay').hidden = false;
+  document.getElementById('cartDrawer').hidden = false;
+
+  document.getElementById('viewOrdersBtn').addEventListener('click', () => {
+    closeCart();
+    showView('orders');
+  });
+  document.getElementById('continueShoppingBtn').addEventListener('click', closeCart);
+}
+
+function receiptItemsHtml(order) {
+  const lines = order.items
+    .map((it) => `<div class="receipt-line"><span>${it.quantity} × ${it.menuItemName}</span><span>${money(it.subtotal)}</span></div>`)
+    .join('');
+  return `${lines}<hr class="receipt-divider"><div class="receipt-total"><span>Total</span><span>${money(order.total)}</span></div>`;
+}
 
 // ---------- orders / receipts ----------
 
@@ -391,6 +459,8 @@ function renderOrders() {
       const date = new Date(order.createdAt).toLocaleString(undefined, {
         month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
       });
+      const ready = orderReadyInfo(order);
+
       return `
       <article class="receipt">
         <div class="receipt-stub"></div>
@@ -400,11 +470,10 @@ function renderOrders() {
             <span class="receipt-status status-${order.status}">${order.status}</span>
           </div>
           <div class="receipt-date">${date}</div>
-          ${order.items
-            .map((it) => `<div class="receipt-line"><span>${it.quantity} × ${it.menuItemName}</span><span>${money(it.subtotal)}</span></div>`)
-            .join('')}
-          <hr class="receipt-divider">
-          <div class="receipt-total"><span>Total</span><span>${money(order.total)}</span></div>
+          <div class="ready-banner ${ready.ready ? 'ready' : 'pending'}">
+            ${ready.ready ? '🎉' : '⏱'} ${ready.text}
+          </div>
+          ${receiptItemsHtml(order)}
         </div>
       </article>
     `;
