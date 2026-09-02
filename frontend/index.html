@@ -13,36 +13,35 @@
 <body>
 
 <header class="topbar">
-  <div class="topbar-row topbar-row--brand">
+  <div class="topbar-inner">
     <div class="brand">
       <svg class="mark" viewBox="0 0 32 32" aria-hidden="true">
         <path d="M7 27V12q0-5.5 4.5-5.5T16 12v4M16 27V12q0-5.5 4.5-5.5T25 12v15" fill="none" stroke="var(--gold)" stroke-width="3.4" stroke-linecap="round"/>
       </svg>
-      <div class="brand-text">
-        <span class="brand-name">McDonald's Clone</span>
-        <span class="brand-tag">Fan-made portfolio project · not affiliated</span>
-      </div>
+      <span class="brand-name">McDonald's Clone</span>
+      <span class="brand-tag">Fan-made · not affiliated</span>
     </div>
-    <button class="cart-btn" id="cartBtn" aria-label="Open cart">
-      <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true">
-        <path d="M2 3h1.6l1 11.2A2 2 0 0 0 6.6 16h8.8a2 2 0 0 0 2-1.8L18.5 6H5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-        <circle cx="8" cy="18.2" r="1.15" fill="currentColor"/>
-        <circle cx="14.5" cy="18.2" r="1.15" fill="currentColor"/>
-      </svg>
-      Cart
-      <span id="cartCount" hidden>0</span>
-    </button>
-  </div>
 
-  <div class="topbar-row topbar-row--nav">
     <nav class="topnav" id="mainNav" aria-label="Main">
       <button class="nav-link active" data-view="menu">Menu</button>
       <button class="nav-link" data-view="orders">Your orders</button>
     </nav>
-    <div class="auth-area">
-      <span class="user-email" id="userEmail" hidden></span>
-      <button class="btn-text" id="logoutBtn" hidden>Log out</button>
-      <button class="btn-account" id="loginNavBtn">Log in / Sign up</button>
+
+    <div class="topbar-actions">
+      <div class="auth-area">
+        <span class="user-email" id="userEmail" hidden></span>
+        <button class="btn-text" id="logoutBtn" hidden>Log out</button>
+        <button class="btn-account" id="loginNavBtn"><span class="btn-account-full">Log in / Sign up</span><span class="btn-account-short">Log in</span></button>
+      </div>
+      <button class="cart-btn" id="cartBtn" aria-label="Open cart">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" aria-hidden="true">
+          <path d="M2 3h1.6l1 11.2A2 2 0 0 0 6.6 16h8.8a2 2 0 0 0 2-1.8L18.5 6H5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="8" cy="18.2" r="1.15" fill="currentColor"/>
+          <circle cx="14.5" cy="18.2" r="1.15" fill="currentColor"/>
+        </svg>
+        <span class="cart-btn-label">Cart</span>
+        <span id="cartCount" hidden>0</span>
+      </button>
     </div>
   </div>
 </header>
