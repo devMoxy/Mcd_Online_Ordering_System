@@ -2,7 +2,7 @@
 
 A full-stack clone of a McDonald's-style online ordering system. Customers can create an account, browse the menu, build an order, check out, and see their order history. This is a portfolio project, not affiliated with McDonald's.
 
-Live demo: http://mcdonalds-clone-frontend-6759fb.s3-website.eu-west-2.amazonaws.com
+The AWS deployment is currently down. I took it offline to avoid ongoing cloud costs on a project built to demonstrate the work, not to run indefinitely. It was live and fully tested end to end (auth, ordering, admin status updates) before I shut it down. Setup instructions below reproduce the whole thing locally in a few minutes.
 
 ## Why I Built This
 
@@ -41,7 +41,7 @@ I also hit a Lombok and JDK version mismatch early on that crashed the compiler 
 ## Architecture
 <img width="400" height="400" alt="mcdonalds-clone-architecture" src="https://github.com/user-attachments/assets/5e19eb32-5243-4e97-bdbe-3b29f337b7f1" />
 
-*Deployment architecture: a static frontend hosted on S3 calls a Spring Boot API running on ECS Fargate, behind an Application Load Balancer inside a VPC. The API connects to a PostgreSQL database on RDS, pulls its container image from ECR, and ships logs to CloudWatch.*
+*Deployment architecture as it ran when live: a static frontend hosted on S3 calls a Spring Boot API running on ECS Fargate, behind an Application Load Balancer inside a VPC. The API connects to a PostgreSQL database on RDS, pulls its container image from ECR, and ships logs to CloudWatch.*
 
 ## Running It Locally
 
@@ -53,4 +53,4 @@ I also hit a Lombok and JDK version mismatch early on that crashed the compiler 
 
 **Frontend**
 1. Open `frontend/index.html` directly in a browser. No build step needed.
-2. By default it points at the live deployed backend. To test against your local backend instead, change `API_BASE` at the top of `frontend/app.js` to `http://localhost:8080`.
+2. Change `API_BASE` at the top of `frontend/app.js` to `http://localhost:8080`, since it currently points at the AWS backend that's no longer running.
